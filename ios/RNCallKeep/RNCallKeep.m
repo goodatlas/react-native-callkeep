@@ -151,7 +151,7 @@ RCT_EXPORT_METHOD(displayIncomingCall:(NSString *)uuidString
                              hasVideo:(BOOL)hasVideo
                   localizedCallerName:(NSString * _Nullable)localizedCallerName)
 {
-    [RNCallKeep reportNewIncomingCall: uuidString handle:handle handleType:handleType hasVideo:hasVideo localizedCallerName:localizedCallerName fromPushKit: NO payload:nil];
+    [RNCallKeep reportNewIncomingCall: uuidString handle:handle handleType:handleType hasVideo:hasVideo localizedCallerName:localizedCallerName fromPushKit: NO payload:nil withCompletionHandler:nil];
 }
 
 RCT_EXPORT_METHOD(startCall:(NSString *)uuidString
@@ -273,6 +273,14 @@ RCT_EXPORT_METHOD(sendDTMF:(NSString *)uuidString dtmf:(NSString *)key)
     [self requestTransaction:transaction];
 }
 
+RCT_EXPORT_METHOD(isCallActive:(NSString *)uuidString)
+{
+#ifdef DEBUG
+    NSLog(@"[RNCallKeep][isCallActive] uuid = %@", uuidString);
+#endif
+    [RNCallKeep isCallActive: uuidString];
+}
+
 - (void)requestTransaction:(CXTransaction *)transaction
 {
 #ifdef DEBUG
@@ -302,6 +310,20 @@ RCT_EXPORT_METHOD(sendDTMF:(NSString *)uuidString dtmf:(NSString *)key)
             }
         }
     }];
+}
+
++ (BOOL)isCallActive:(NSString *)uuidString
+{
+    CXCallObserver *callObserver = [[CXCallObserver alloc] init];
+    NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
+
+    for(CXCall *call in callObserver.calls){
+        NSLog(@"[RNCallKeep] isCallActive %@ %d ?", call.UUID, [call.UUID isEqual:uuid]);
+        if([call.UUID isEqual:[[NSUUID alloc] initWithUUIDString:uuidString]] && !call.hasConnected){
+            return true;
+        }
+    }
+    return false;
 }
 
 + (void)endCallWithUUID:(NSString *)uuidString
@@ -341,6 +363,18 @@ RCT_EXPORT_METHOD(sendDTMF:(NSString *)uuidString dtmf:(NSString *)key)
                   fromPushKit:(BOOL)fromPushKit
                       payload:(NSDictionary * _Nullable)payload
 {
+    [RNCallKeep reportNewIncomingCall:uuidString handle:handle handleType:handleType hasVideo:hasVideo localizedCallerName:localizedCallerName fromPushKit:fromPushKit payload:payload withCompletionHandler:nil];
+}
+
++ (void)reportNewIncomingCall:(NSString *)uuidString
+                       handle:(NSString *)handle
+                   handleType:(NSString *)handleType
+                     hasVideo:(BOOL)hasVideo
+          localizedCallerName:(NSString * _Nullable)localizedCallerName
+                  fromPushKit:(BOOL)fromPushKit
+                      payload:(NSDictionary * _Nullable)payload
+        withCompletionHandler:(void (^_Nullable)(void))completion
+{
 #ifdef DEBUG
     NSLog(@"[RNCallKeep][reportNewIncomingCall] uuidString = %@", uuidString);
 #endif
@@ -373,6 +407,9 @@ RCT_EXPORT_METHOD(sendDTMF:(NSString *)uuidString dtmf:(NSString *)key)
                 [callKeep configureAudioSession];
             }
         }
+        if (completion != nil) {
+            completion();
+        }
     }];
 }
 
@@ -383,7 +420,7 @@ RCT_EXPORT_METHOD(sendDTMF:(NSString *)uuidString dtmf:(NSString *)key)
           localizedCallerName:(NSString * _Nullable)localizedCallerName
                   fromPushKit:(BOOL)fromPushKit
 {
-    [RNCallKeep reportNewIncomingCall: uuidString handle:handle handleType:handleType hasVideo:hasVideo localizedCallerName:localizedCallerName fromPushKit: fromPushKit payload:nil];
+    [RNCallKeep reportNewIncomingCall: uuidString handle:handle handleType:handleType hasVideo:hasVideo localizedCallerName:localizedCallerName fromPushKit: fromPushKit payload:nil withCompletionHandler:nil];
 }
 
 - (BOOL)lessThanIos10_2
