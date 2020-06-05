@@ -303,7 +303,7 @@ RCT_EXPORT_METHOD(isCallActive:(NSString *)uuidString)
                 callUpdate.hasVideo = startCallAction.video;
                 callUpdate.localizedCallerName = startCallAction.contactIdentifier;
                 callUpdate.supportsDTMF = NO; // YES;
-                callUpdate.supportsHolding = YES;
+                callUpdate.supportsHolding = NO;
                 callUpdate.supportsGrouping = NO; // YES;
                 callUpdate.supportsUngrouping = NO; // YES;
                 [self.callKeepProvider reportCallWithUUID:startCallAction.callUUID updated:callUpdate];
@@ -383,7 +383,7 @@ RCT_EXPORT_METHOD(isCallActive:(NSString *)uuidString)
     CXCallUpdate *callUpdate = [[CXCallUpdate alloc] init];
     callUpdate.remoteHandle = [[CXHandle alloc] initWithType:_handleType value:handle];
     callUpdate.supportsDTMF = NO; // YES;
-    callUpdate.supportsHolding = YES;
+    callUpdate.supportsHolding = NO;
     callUpdate.supportsGrouping = NO; // YES;
     callUpdate.supportsUngrouping = NO; // YES;
     callUpdate.hasVideo = hasVideo;
