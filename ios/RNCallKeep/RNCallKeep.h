@@ -49,4 +49,6 @@ continueUserActivity:(NSUserActivity *)userActivity
 
 + (BOOL)isCallActive:(NSString *)uuidString;
 
++ (void)reportCallWith:(NSString *)uuidString andHandle:(NSString *)handle;
+
 @end

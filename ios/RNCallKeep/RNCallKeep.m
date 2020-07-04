@@ -655,6 +655,18 @@ RCT_EXPORT_METHOD(reportUpdatedCall:(NSString *)uuidString contactIdentifier:(NS
     [self.callKeepProvider reportCallWithUUID:uuid updated:callUpdate];
 }
 
++ (void)reportCallWith:(NSString *)uuidString andHandle:(NSString *)handle
+{
+    NSLog(@"reportCallWith:(NSString *)uuidString andHandle:(NSString *)handle");
+    NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
+    CXHandle *callHandle = [[CXHandle alloc] initWithType:CXHandleTypePhoneNumber value:handle];
+    CXCallUpdate *callUpdate = [[CXCallUpdate alloc] init];
+    callUpdate.localizedCallerName = handle;
+    callUpdate.remoteHandle = callHandle;
+    [sharedProvider reportCallWithUUID:uuid updated:callUpdate];
+}
+
+
 // Answering incoming call
 - (void)provider:(CXProvider *)provider performAnswerCallAction:(CXAnswerCallAction *)action
 {
