@@ -92,7 +92,7 @@ export default class RNCallKeep {
   /**
      * @description reportConnectedOutgoingCallWithUUID method is available only on iOS.
   */
-  static reportConnectingOutgoingCallWithUUID(uuid: string): void {
+  static reportConnectingOutgoingCallWithUUID(uuid: string): void {}
 
   static fullfillEndCall(): void {}
   static reportEndCallWithUUID(uuid: string, reason: number): void {
