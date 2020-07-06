@@ -38,6 +38,8 @@ static NSString *const RNCallKeepCheckReachability = @"RNCallKeepCheckReachabili
 {
     NSOperatingSystemVersion _version;
     BOOL _isStartCallActionEventListenerAdded;
+
+    CXEndCallAction *endCallAction;
 }
 
 static CXProvider* sharedProvider;
@@ -185,6 +187,11 @@ RCT_EXPORT_METHOD(endCall:(NSString *)uuidString)
     CXTransaction *transaction = [[CXTransaction alloc] initWithAction:endCallAction];
 
     [self requestTransaction:transaction];
+}
+
+RCT_EXPORT_METHOD(fullfillEndCall)
+{
+    [endCallAction fulfill];
 }
 
 RCT_EXPORT_METHOD(endAllCalls)
@@ -686,9 +693,9 @@ RCT_EXPORT_METHOD(reportUpdatedCall:(NSString *)uuidString contactIdentifier:(NS
 #endif
     [self sendEventWithName:RNCallKeepPerformEndCallAction body:@{ @"callUUID": [action.callUUID.UUIDString lowercaseString] }];
 
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3.0 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [action fulfill];
-    });
+    // dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3.0 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+    //     [action fulfill];
+    // });
 }
 
 -(void)provider:(CXProvider *)provider performSetHeldCallAction:(CXSetHeldCallAction *)action

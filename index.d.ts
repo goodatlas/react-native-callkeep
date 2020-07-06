@@ -94,7 +94,7 @@ export default class RNCallKeep {
   */
   static reportConnectingOutgoingCallWithUUID(uuid: string): void {
 
-  }
+  static fullfillEndCall(): void {}
   static reportEndCallWithUUID(uuid: string, reason: number): void {
 
   }
